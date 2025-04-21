@@ -1,4 +1,4 @@
-name: Deploy Strapi to EC2 with Terraform
+name: Deploy to EC2 with Terraform
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to AWS EC2
+    name: Deploy to AWS
     runs-on: ubuntu-latest
 
     steps:
@@ -33,12 +33,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: us-east-1
 
-      - name: Decode SSH key (ayushkey.pem)
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > ayushkey.pem
-          chmod 600 ayushkey.pem
-
-      - name: Clean Terraform State (optional)
+      - name: Clean Terraform State (Optional - for fresh deployments)
         run: |
           rm -f terraform.tfstate terraform.tfstate.backup
           rm -rf .terraform
