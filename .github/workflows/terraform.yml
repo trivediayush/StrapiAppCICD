@@ -1,4 +1,4 @@
-name: Deploy to EC2 with Terraform
+name: Terraform Deploy to AWS EC2
 
 on:
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: us-east-1
 
-      - name: Clean Terraform State (Optional)
+      - name: Clean Terraform State (optional)
         run: |
           rm -f terraform.tfstate terraform.tfstate.backup
           rm -rf .terraform
