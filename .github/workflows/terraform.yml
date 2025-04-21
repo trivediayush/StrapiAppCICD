@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: infra  # Ensure Terraform is executed from the 'infra' folder
+        working-directory: Terraform
 
     steps:
     - name: Checkout repo
