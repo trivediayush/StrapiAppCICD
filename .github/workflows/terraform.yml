@@ -15,6 +15,11 @@ jobs:
       run:
         working-directory: Terraform
 
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_DEFAULT_REGION: us-east-1
+
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -30,8 +35,6 @@ jobs:
     - name: Terraform Plan
       run: |
         terraform plan \
-          -var="aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
-          -var="aws_secret_key=${{ secrets.AWS_SECRET_KEY }}" \
           -var="key_name=ayushkey" \
           -var="docker_image=ayusht45cyber/mystrapici" \
           -var="image_tag=${{ github.event.inputs.image_tag }}"
@@ -39,8 +42,6 @@ jobs:
     - name: Terraform Apply
       run: |
         terraform apply -auto-approve \
-          -var="aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
-          -var="aws_secret_key=${{ secrets.AWS_SECRET_KEY }}" \
           -var="key_name=ayushkey" \
           -var="docker_image=ayusht45cyber/mystrapici" \
           -var="image_tag=${{ github.event.inputs.image_tag }}"
