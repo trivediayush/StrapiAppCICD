@@ -53,6 +53,3 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
-output "public_ip" {
-  value = aws_instance.strapi.public_ip
-}
