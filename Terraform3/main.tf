@@ -98,11 +98,11 @@ resource "aws_ecs_task_definition" "strapi" {
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 
   container_definitions = jsonencode([{
-    name      = "strapi"
-    image     = "711387111644.dkr.ecr.us-east-1.amazonaws.com/strapi:latest"
-    essential = true
+    name      = "strapi",
+    image     = "711387111644.dkr.ecr.us-east-1.amazonaws.com/strapi:latest",
+    essential = true,
     portMappings = [{
-      containerPort = 1337
+      containerPort = 1337,
       protocol      = "tcp"
     }]
   }])
@@ -118,10 +118,11 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "strapi" {
-  name     = "strapi-tg"
-  port     = 1337
-  protocol = "HTTP"
-  vpc_id   = data.aws_vpc.default.id
+  name         = "strapi-tg"
+  port         = 1337
+  protocol     = "HTTP"
+  vpc_id       = data.aws_vpc.default.id
+  target_type  = "ip"
 
   health_check {
     path                = "/"
