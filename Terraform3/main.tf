@@ -114,12 +114,23 @@ resource "aws_ecs_task_definition" "strapi" {
   }])
 }
 
-# ALB
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+
+  filter {
+    name   = "tag:Name"
+    values = ["*public*"]
+  }
+}
+
 resource "aws_lb" "main" {
   name               = "strapi-alb"
   internal           = false
   load_balancer_type = "application"
-  subnets            = [data.aws_subnet.public.id]
+  subnets            = data.aws_subnets.public.ids
   security_groups    = [aws_security_group.alb_sg.id]
 }
 
@@ -148,6 +159,7 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_lb_target_group.strapi.arn
   }
 }
+
 
 # ECS Service
 resource "aws_ecs_service" "strapi" {
