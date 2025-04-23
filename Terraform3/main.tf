@@ -2,13 +2,13 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Use default VPC and get a public subnet
+# Use default VPC
 data "aws_vpc" "default" {
   default = true
 }
 
-# Select one public subnet using filters
-data "aws_subnet" "public" {
+# Collect public subnets in multiple AZs
+data "aws_subnets" "public" {
   filter {
     name   = "default-for-az"
     values = ["true"]
@@ -17,12 +17,6 @@ data "aws_subnet" "public" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.default.id]
-  }
-
-  # Choose specific AZ to avoid ambiguity
-  filter {
-    name   = "availability-zone"
-    values = ["us-east-1a"]
   }
 }
 
@@ -114,18 +108,7 @@ resource "aws_ecs_task_definition" "strapi" {
   }])
 }
 
-data "aws_subnets" "public" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-
-  filter {
-    name   = "tag:Name"
-    values = ["*public*"]
-  }
-}
-
+# Load Balancer
 resource "aws_lb" "main" {
   name               = "strapi-alb"
   internal           = false
@@ -160,7 +143,6 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-
 # ECS Service
 resource "aws_ecs_service" "strapi" {
   name            = "strapi-service"
@@ -170,7 +152,7 @@ resource "aws_ecs_service" "strapi" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [data.aws_subnet.public.id]
+    subnets          = data.aws_subnets.public.ids
     assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
   }
@@ -184,6 +166,7 @@ resource "aws_ecs_service" "strapi" {
   depends_on = [aws_lb_listener.http]
 }
 
+# Output the DNS name of the ALB
 output "strapi_url" {
   value = aws_lb.main.dns_name
 }
